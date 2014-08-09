@@ -10,20 +10,24 @@ import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import java.io.File;
+import java.util.Properties;
 
 public class Main {
     public static void main(String ... args){
-        final String url = "svnurl";
-        final String destPath = "data";
+        PropertyReader propertyReader = new PropertyReader();
+        Properties properties = propertyReader.getProperties("dev_svn_config.properties");
+        final String url = properties.getProperty("svn_url");
+        final String destPath = "src/main/resources";
 
         SVNRepository repository = null;
-
         try{
             //initiate the reporitory from the url
             repository = SVNRepositoryFactory.create(SVNURL.parseURIDecoded(url));
             //create authentication data
+            String userName = properties.getProperty("user_name");
+            String password = properties.getProperty("password");
             ISVNAuthenticationManager authManager =
-                    SVNWCUtil.createDefaultAuthenticationManager("user", "password");
+                    SVNWCUtil.createDefaultAuthenticationManager(userName, password);
             repository.setAuthenticationManager(authManager);
             //output some data to verify connection
             System.out.println( "Repository Root: " + repository.getRepositoryRoot( true ) );
@@ -48,4 +52,5 @@ public class Main {
             System.out.println("Done");
         }
     }
+
 }
